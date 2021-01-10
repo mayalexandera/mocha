@@ -40,7 +40,7 @@ describe("Deleting a user", () => {
     User.findByIdAndDelete(joe._id)
       .then(() => User.findOne({ name: "Joe" }))
       .then((user) => {
-        assert(user === null );
+        assert(user === null);
         done();
       });
   });
