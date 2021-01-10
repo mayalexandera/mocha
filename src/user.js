@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const PostSchema = require("./post");
+const BlogPostSchema = require("./blogPost");
 
 const UserSchema = new Schema({
   name: {
@@ -12,13 +13,31 @@ const UserSchema = new Schema({
     },
   },
   posts: [PostSchema],
-  likes: Number
+  likes: Number,
+  blogPosts: [{
+    type: Schema.Types.ObjectId,
+    ref: "blogPost"
+  }]
 });
 
-UserSchema.virtual("postCount").get(function () {
+UserSchema.virtual("postCount").get(function() {
   return this.posts.length
 });
 
-const User = mongoose.model("User", UserSchema);
+UserSchema.pre('remove', function() {
+  const BlogPost = mongoose.model('blogPost')
+
+  /**
+   * remove() takes in a nested object.  first property is what to 
+   * search by - in this case it is the _id property. 
+   * $in is mongo operator saying to select the instances whose _id 
+   * is included in this instance of the User class.  
+   */
+  BlogPost.remove({ _id: { $in: this.blogPosts } })
+
+})
+
+const User = mongoose.model("user", UserSchema);
 
 module.exports = User;
+ 

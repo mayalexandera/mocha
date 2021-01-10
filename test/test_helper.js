@@ -1,24 +1,25 @@
 const mongoose = require("mongoose");
-const api = require('./api')
+const api = require("./api");
 
 //before is only called one time
 before((done) => {
-  mongoose.connect(api,
-    {
-      useUnifiedTopology: true,
-      useNewUrlParser: true,
-    }
-  );
+  mongoose.connect(api, {
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
+  });
   mongoose.connection
-    .once("open", () => { done() })
+    .once("open", () => {
+      done();
+    })
     .on("error", (error) => {
       console.warn("Warning", error);
     });
-})
-
-
-beforeEach((done) => {
-  mongoose.connection.collections.users.drop(() => {
-    done();
-  });
 });
+
+// beforeEach((done) => {
+//   // console.log(mongoose.connection.collections) 
+//   const { users, comments, blogposts } = mongoose.connection.collections;
+//    Promise.all([users.drop(), comments.drop(), blogposts.drop()]).then(() =>
+//      done()
+//    );
+// });
