@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const api = require("./api");
 
+mongoose.Promise = global.Promise
 //before is only called one time
 before((done) => {
   mongoose.connect(api, {
@@ -16,10 +17,14 @@ before((done) => {
     });
 });
 
-// beforeEach((done) => {
-//   // console.log(mongoose.connection.collections) 
-//   const { users, comments, blogposts } = mongoose.connection.collections;
-//    Promise.all([users.drop(), comments.drop(), blogposts.drop()]).then(() =>
-//      done()
-//    );
-// });
+beforeEach((done) => {
+  // console.log(mongoose.connection.collections)
+  const { users, comments, blogposts } = mongoose.connection.collections;
+  users.drop(() => {
+    comments.drop(() => {
+      blogposts.drop(() => {
+        done();
+      });
+    });
+  });
+});

@@ -24,7 +24,7 @@ UserSchema.virtual("postCount").get(function() {
   return this.posts.length
 });
 
-UserSchema.pre('remove', function() {
+UserSchema.pre('remove', function(next) {
   const BlogPost = mongoose.model('blogPost')
 
   /**
@@ -33,7 +33,10 @@ UserSchema.pre('remove', function() {
    * $in is mongo operator saying to select the instances whose _id 
    * is included in this instance of the User class.  
    */
-  BlogPost.remove({ _id: { $in: this.blogPosts } })
+  BlogPost.deleteMany({ _id: { $in: this.blogPosts } })
+
+  //next function calls next middleware || continue with request.
+  .then(() => next())
 
 })
 
